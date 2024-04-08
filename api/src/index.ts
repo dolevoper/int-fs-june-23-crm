@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import { json } from "body-parser";
 import { getConnection, initConnection } from "./dbConnection";
+import { LeadDetails } from "./LeadDetails.model";
 
 const app = express();
 
@@ -55,6 +56,28 @@ app.post("/registerlead", async (req, res) => {
 
     res.status(201);
     res.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+    res.json({ error: "something went wrong" });
+  }
+});
+
+app.get("/leads/:id", async (req, res) => {
+  try {
+    const connection = getConnection();
+
+    const [detail, ...details]: any[] = await connection.execute(
+      `SELECT *
+      FROM crm.leads leads, crm.contactInfo contact, crm.companyInfo company 
+      WHERE id = ?`,
+      [req.params.id]
+    );
+
+    const leadDetails = detail[0] as LeadDetails;
+
+    res.status(201);
+    res.json(leadDetails);
   } catch (err) {
     console.error(err);
     res.status(500);
