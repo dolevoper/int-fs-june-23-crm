@@ -15,6 +15,21 @@ app.get("/check", async (_, res) => {
   res.json({ status: "OK" });
 });
 
+app.get("/leads", async (_, res) => {
+  try {
+    const connection = getConnection();
+    const [result] = await connection.query(`SELECT * FROM sql11696756.leads`);
+    console.log(result);
+
+    res.status(200);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+    res.json({ error: "something went wrong" });
+  }
+});
+
 app.post("/registerlead", async (req, res) => {
   try {
     const { id, createdAt, priority, stage, contactInfo, companyInfo } =
